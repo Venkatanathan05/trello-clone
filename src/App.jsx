@@ -8,40 +8,34 @@ const App = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [newColumnName, setNewColumnName] = useState("");
   const [draggedTask, setDraggedTask] = useState(null);
-  const [dropTarget, setDropTarget] = useState(null);
 
   useEffect(() => {
     localStorage.setItem("board", JSON.stringify(columns));
   }, [columns]);
 
   const addColumn = () => {
-    if (newColumnName.trim()) {
-      setColumns([...columns, { name: newColumnName.trim(), tasks: [] }]);
-      setNewColumnName("");
+    const name = prompt("Enter column name:");
+    if (name) {
+      setColumns([...columns, { name, tasks: [] }]);
     }
   };
 
-  const addTask = (colIdx, taskText) => {
-    if (taskText.trim()) {
+  const addTask = (colIdx) => {
+    const task = prompt("Enter task title:");
+    if (task) {
       const newCols = [...columns];
-      newCols[colIdx].tasks.push(taskText.trim());
+      newCols[colIdx].tasks.push(task);
       setColumns(newCols);
     }
   };
 
   const handleTaskDragStart = (e, colIdx, taskIdx) => {
-    e.dataTransfer.setData("type", "task");
     setDraggedTask({ colIdx, taskIdx });
   };
 
-  const handleTaskDragOver = (colIdx, taskIdx) => {
-    setDropTarget({ colIdx, taskIdx });
-  };
-
-  const handleTaskDrop = () => {
-    if (!draggedTask || !dropTarget) return;
+  const handleTaskDrop = (targetColIdx, targetTaskIdx) => {
+    if (!draggedTask) return;
 
     const newCols = [...columns];
     const task = newCols[draggedTask.colIdx].tasks.splice(
@@ -49,33 +43,24 @@ const App = () => {
       1
     )[0];
 
-    let insertIdx = dropTarget.taskIdx;
+    let insertIdx = targetTaskIdx;
     if (
-      draggedTask.colIdx === dropTarget.colIdx &&
-      draggedTask.taskIdx < dropTarget.taskIdx
+      draggedTask.colIdx === targetColIdx &&
+      draggedTask.taskIdx < targetTaskIdx
     ) {
       insertIdx--;
     }
 
-    newCols[dropTarget.colIdx].tasks.splice(insertIdx, 0, task);
+    newCols[targetColIdx].tasks.splice(insertIdx, 0, task);
     setColumns(newCols);
     setDraggedTask(null);
-    setDropTarget(null);
   };
 
   return (
     <div className="app">
       <header>
         <h1>Trello Clone</h1>
-        <div className="column-input">
-          <input
-            type="text"
-            placeholder="New column name"
-            value={newColumnName}
-            onChange={(e) => setNewColumnName(e.target.value)}
-          />
-          <button onClick={addColumn}>+ Add Column</button>
-        </div>
+        <button onClick={addColumn}>+ Add Column</button>
       </header>
       <div className="board">
         {columns.map((col, colIdx) => (
@@ -85,7 +70,6 @@ const App = () => {
             colIdx={colIdx}
             addTask={addTask}
             onTaskDragStart={handleTaskDragStart}
-            onTaskDragOver={handleTaskDragOver}
             onTaskDrop={handleTaskDrop}
           />
         ))}

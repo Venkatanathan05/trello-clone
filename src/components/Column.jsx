@@ -1,27 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import TaskCard from "./TaskCard.jsx";
 import "../styles/Column.css";
 
-const Column = ({
-  col,
-  colIdx,
-  addTask,
-  onTaskDragStart,
-  onTaskDragOver,
-  onTaskDrop,
-}) => {
-  const [newTask, setNewTask] = useState("");
-
-  const handleAddTask = () => {
-    addTask(colIdx, newTask);
-    setNewTask("");
-  };
-
+const Column = ({ col, colIdx, addTask, onTaskDragStart, onTaskDrop }) => {
   return (
     <div className="column-wrapper">
       <div className="column">
         <div className="column-header">
           <h2>{col.name}</h2>
+          <button onClick={() => addTask(colIdx)}>+ Add Task</button>
         </div>
         <div className="task-list">
           {col.tasks.map((task, taskIdx) => (
@@ -29,19 +16,21 @@ const Column = ({
               key={taskIdx}
               task={task}
               onDragStart={(e) => onTaskDragStart(e, colIdx, taskIdx)}
-              onDragOver={() => onTaskDragOver(colIdx, taskIdx)}
-              onDrop={onTaskDrop}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                onTaskDrop(colIdx, taskIdx);
+              }}
             />
           ))}
-        </div>
-        <div className="task-input">
-          <input
-            type="text"
-            placeholder="New task"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
+          <div
+            className="drop-zone"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              onTaskDrop(colIdx, col.tasks.length);
+            }}
           />
-          <button onClick={handleAddTask}>+ Add Task</button>
         </div>
       </div>
     </div>

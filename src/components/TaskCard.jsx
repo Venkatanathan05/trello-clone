@@ -7,10 +7,7 @@ const TaskCard = ({ task, onDragStart, onDragOver, onDrop }) => {
       className="task-card"
       draggable
       onDragStart={onDragStart}
-      onDragOver={(e) => {
-        e.preventDefault();
-        onDragOver();
-      }}
+      onDragOver={onDragOver}
       onDrop={onDrop}
     >
       {task}
