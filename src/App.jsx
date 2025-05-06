@@ -8,6 +8,7 @@ const App = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [newColumnName, setNewColumnName] = useState("");
   const [draggedTask, setDraggedTask] = useState(null);
   const [dropTarget, setDropTarget] = useState(null);
 
@@ -16,17 +17,16 @@ const App = () => {
   }, [columns]);
 
   const addColumn = () => {
-    const name = prompt("Enter column name:");
-    if (name) {
-      setColumns([...columns, { name, tasks: [] }]);
+    if (newColumnName.trim()) {
+      setColumns([...columns, { name: newColumnName.trim(), tasks: [] }]);
+      setNewColumnName("");
     }
   };
 
-  const addTask = (colIdx) => {
-    const task = prompt("Enter task title:");
-    if (task) {
+  const addTask = (colIdx, taskText) => {
+    if (taskText.trim()) {
       const newCols = [...columns];
-      newCols[colIdx].tasks.push(task);
+      newCols[colIdx].tasks.push(taskText.trim());
       setColumns(newCols);
     }
   };
@@ -67,7 +67,15 @@ const App = () => {
     <div className="app">
       <header>
         <h1>Trello Clone</h1>
-        <button onClick={addColumn}>+ Add Column</button>
+        <div className="column-input">
+          <input
+            type="text"
+            placeholder="New column name"
+            value={newColumnName}
+            onChange={(e) => setNewColumnName(e.target.value)}
+          />
+          <button onClick={addColumn}>+ Add Column</button>
+        </div>
       </header>
       <div className="board">
         {columns.map((col, colIdx) => (
