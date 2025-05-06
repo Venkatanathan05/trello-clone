@@ -1,11 +1,19 @@
-import React, { useState } from "react";
-import Column from "./components/Column";
+import React, { useState, useEffect } from "react";
+import Column from "./components/Column.jsx";
 import "./styles/App.css";
 
 const App = () => {
-  const [columns, setColumns] = useState([]);
+  const [columns, setColumns] = useState(() => {
+    const saved = localStorage.getItem("board");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [draggedTask, setDraggedTask] = useState(null);
-  const [draggedColIdx, setDraggedColIdx] = useState(null);
+  const [dropTarget, setDropTarget] = useState(null);
+
+  useEffect(() => {
+    localStorage.setItem("board", JSON.stringify(columns));
+  }, [columns]);
 
   const addColumn = () => {
     const name = prompt("Enter column name:");
@@ -28,30 +36,31 @@ const App = () => {
     setDraggedTask({ colIdx, taskIdx });
   };
 
-  const handleTaskDrop = (colIdx) => {
-    if (!draggedTask) return;
+  const handleTaskDragOver = (colIdx, taskIdx) => {
+    setDropTarget({ colIdx, taskIdx });
+  };
+
+  const handleTaskDrop = () => {
+    if (!draggedTask || !dropTarget) return;
+
     const newCols = [...columns];
     const task = newCols[draggedTask.colIdx].tasks.splice(
       draggedTask.taskIdx,
       1
     )[0];
-    newCols[colIdx].tasks.push(task);
+
+    let insertIdx = dropTarget.taskIdx;
+    if (
+      draggedTask.colIdx === dropTarget.colIdx &&
+      draggedTask.taskIdx < dropTarget.taskIdx
+    ) {
+      insertIdx--;
+    }
+
+    newCols[dropTarget.colIdx].tasks.splice(insertIdx, 0, task);
     setColumns(newCols);
     setDraggedTask(null);
-  };
-
-  const handleColumnDragStart = (e, colIdx) => {
-    e.dataTransfer.setData("type", "column");
-    setDraggedColIdx(colIdx);
-  };
-
-  const handleColumnDrop = (dropIdx) => {
-    if (draggedColIdx === null || draggedColIdx === dropIdx) return;
-    const newCols = [...columns];
-    const [movedCol] = newCols.splice(draggedColIdx, 1);
-    newCols.splice(dropIdx, 0, movedCol);
-    setColumns(newCols);
-    setDraggedColIdx(null);
+    setDropTarget(null);
   };
 
   return (
@@ -68,9 +77,8 @@ const App = () => {
             colIdx={colIdx}
             addTask={addTask}
             onTaskDragStart={handleTaskDragStart}
+            onTaskDragOver={handleTaskDragOver}
             onTaskDrop={handleTaskDrop}
-            onColumnDragStart={handleColumnDragStart}
-            onColumnDrop={handleColumnDrop}
           />
         ))}
       </div>
