@@ -1,8 +1,7 @@
 .app {
-  font-family: Arial, sans-serif;
+  font-family: sans-serif;
   padding: 20px;
-  background-color: #f4f5f7;
-  min-height: 100vh;
+  overflow-y: none;
 }
 
 header {
@@ -12,23 +11,35 @@ header {
   margin-bottom: 20px;
 }
 
-header h1 {
-  margin: 0;
-  color: #333;
+.column-input {
+  display: flex;
+  gap: 10px;
 }
 
-header button {
-  padding: 8px 16px;
+.column-input input {
+  padding: 5px 10px;
   font-size: 16px;
-  cursor: pointer;
-  background-color: #0079bf;
-  color: white;
-  border: none;
-  border-radius: 4px;
 }
 
 .board {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.add-column-section {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.add-column-section input {
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.ReactVirtualized__Grid__innerScrollContainer {
+  overflow-y: hidden !important;
 }

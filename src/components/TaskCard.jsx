@@ -1,7 +1,14 @@
 import React from "react";
 import "../styles/TaskCard.css";
 
-const TaskCard = ({ task, onDragStart, onDragOver, onDrop }) => {
+const TaskCard = ({
+  task,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onEdit,
+  onDelete,
+}) => {
   return (
     <div
       className="task-card"
@@ -10,7 +17,11 @@ const TaskCard = ({ task, onDragStart, onDragOver, onDrop }) => {
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
-      {task}
+      <div className="task-content">{task}</div>
+      <div className="task-actions">
+        <button onClick={onEdit}>✏️</button>
+        <button onClick={onDelete}>🗑️</button>
+      </div>
     </div>
   );
 };
