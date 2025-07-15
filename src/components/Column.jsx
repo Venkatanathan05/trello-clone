@@ -11,7 +11,7 @@ const Column = ({
   onTaskDrop,
   editTask,
   deleteTask,
-  deleteColumn, // 🔹 newly added prop
+  deleteColumn,
 }) => {
   const [newTask, setNewTask] = useState("");
 
